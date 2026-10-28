@@ -2,34 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Everyone Home DC — Check In</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a3a5c; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
   .logo-wrap { margin-bottom: 1.5rem; text-align: center; }
-  .logo-wrap img { height: 100px; width: auto; }
+  .logo-wrap img { height: 110px; width: auto; }
   .card { background: #fff; border-radius: 16px; padding: 2rem 2.5rem; width: 100%; max-width: 520px; }
   h1 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; text-align: center; }
   .sub { font-size: 15px; color: #666; text-align: center; margin-bottom: 1.75rem; }
-  .field { margin-bottom: 1.25rem; position: relative; }
+  .field { margin-bottom: 1.25rem; }
   label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; }
-  input[type="text"], input[type="date"], select {
+  input[type="text"], input[type="password"], input[type="date"], select {
     width: 100%; padding: 12px 14px; border-radius: 10px;
     border: 1px solid #ccc; font-size: 16px; background: #fff;
     color: #1a1a1a; font-family: inherit; appearance: none;
     -webkit-appearance: none;
   }
   input:focus, select:focus { outline: none; border-color: #1a3a5c; box-shadow: 0 0 0 3px rgba(26,58,92,0.12); }
-  .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; border-radius: 10px; z-index: 10; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-  .autocomplete-item { padding: 12px 14px; font-size: 15px; cursor: pointer; color: #1a1a1a; border-bottom: 1px solid #f0f0f0; }
-  .autocomplete-item:last-child { border-bottom: none; }
-  .autocomplete-item:hover { background: #f0f5fb; }
-  .confirm-box { background: #e8f0f8; border: 1px solid #b0c8e8; border-radius: 10px; padding: 14px 16px; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .confirm-box p { font-size: 14px; color: #1a3a5c; flex: 1; }
-  .confirm-btns { display: flex; gap: 8px; flex-shrink: 0; }
-  .btn-yes { padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; font-family: inherit; background: #1a3a5c; color: #fff; border: none; }
-  .btn-no { padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; font-family: inherit; background: #fff; color: #1a3a5c; border: 1px solid #1a3a5c; }
+  .welcome-back { background: #e8f0f8; border: 1px solid #b0c8e8; border-radius: 10px; padding: 12px 16px; margin-bottom: 1.25rem; font-size: 14px; color: #1a3a5c; }
   .services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .svc-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; border: 1px solid #ccc; background: #fff; color: #1a1a1a; font-size: 15px; cursor: pointer; font-family: inherit; transition: all 0.15s; text-align: left; }
   .svc-btn svg { flex-shrink: 0; opacity: 0.5; }
@@ -44,11 +36,11 @@
   .dot.on { background: #1a3a5c; }
   .success-wrap { text-align: center; padding: 1.5rem 0; }
   .success-icon { width: 72px; height: 72px; border-radius: 50%; background: #d4edda; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
-  .success-icon svg { stroke: #28a745; }
   .success-wrap h2 { font-size: 24px; font-weight: 500; margin-bottom: 10px; color: #1a1a1a; }
   .success-wrap p { color: #555; font-size: 16px; margin-bottom: 2rem; line-height: 1.6; }
   .restart-btn { padding: 12px 32px; border-radius: 10px; border: 1px solid #ccc; background: #f5f5f5; color: #1a1a1a; font-size: 15px; cursor: pointer; font-family: inherit; }
-  .err { font-size: 13px; color: #c0392b; margin-top: 8px; }
+  .err { font-size: 13px; color: #c0392b; margin-top: 8px; min-height: 18px; }
+  .hidden { display: none; }
   @media (max-width: 480px) {
     .card { padding: 1.5rem 1.25rem; }
     .services-grid { grid-template-columns: 1fr; }
@@ -58,10 +50,23 @@
 <body>
 
 <div class="logo-wrap">
-  <img src="https://everyonehomedc.org/wp-content/uploads/2019/03/ehdc-logo.png" alt="Everyone Home DC" style="height:110px;width:auto;">
+  <img src="https://everyonehomedc.org/wp-content/uploads/2019/03/ehdc-logo.png" alt="Everyone Home DC">
 </div>
 
-<div class="card" id="main-card">
+<!-- STAFF PIN SCREEN -->
+<div class="card" id="pin-card">
+  <h1>Staff setup</h1>
+  <p class="sub">Enter the kiosk code to begin</p>
+  <div class="field">
+    <label for="pin">Kiosk code</label>
+    <input type="password" id="pin" autocomplete="off" inputmode="numeric" placeholder="Kiosk code">
+  </div>
+  <button class="main-btn" id="pin-btn" onclick="submitPin()">Start</button>
+  <div class="err" id="pin-err"></div>
+</div>
+
+<!-- CHECK-IN FORM -->
+<div class="card hidden" id="main-card">
   <div class="dots">
     <div class="dot on" id="d1"></div>
     <div class="dot" id="d2"></div>
@@ -71,37 +76,31 @@
 
   <div id="step-1">
     <h1>Welcome</h1>
-    <p class="sub">Start typing your name to check in</p>
+    <p class="sub">Please enter your name to check in</p>
     <div class="field">
       <label for="fname">First name</label>
       <input type="text" id="fname" placeholder="First name" autocomplete="off" oninput="onNameInput()">
-      <div class="autocomplete-list" id="ac-list" style="display:none"></div>
     </div>
     <div class="field">
       <label for="lname">Last name</label>
       <input type="text" id="lname" placeholder="Last name" autocomplete="off" oninput="onNameInput()">
     </div>
-    <div id="confirm-box" style="display:none" class="confirm-box">
-      <p id="confirm-text"></p>
-      <div class="confirm-btns">
-        <button class="btn-yes" onclick="confirmReturning()">Yes, that's me</button>
-        <button class="btn-no" onclick="dismissConfirm()">No</button>
-      </div>
-    </div>
+    <div id="welcome-back" class="welcome-back hidden"></div>
     <button class="main-btn" onclick="goStep(2)">Continue</button>
+    <div class="err" id="step1-err"></div>
   </div>
 
-  <div id="step-2" style="display:none">
+  <div id="step-2" class="hidden">
     <h1>Date of birth</h1>
-    <p class="sub">Please confirm your date of birth</p>
+    <p class="sub">Please enter your date of birth</p>
     <div class="field">
       <label for="dob">Date of birth</label>
-      <input type="date" id="dob" max="">
+      <input type="date" id="dob">
     </div>
     <button class="main-btn" onclick="goStep(3)">Continue</button>
   </div>
 
-  <div id="step-3" style="display:none">
+  <div id="step-3" class="hidden">
     <h1>Housing situation</h1>
     <p class="sub">What best describes where you are staying?</p>
     <div class="field">
@@ -119,7 +118,7 @@
     <button class="main-btn" onclick="goStep(4)">Continue</button>
   </div>
 
-  <div id="step-4" style="display:none">
+  <div id="step-4" class="hidden">
     <h1>Services needed</h1>
     <p class="sub">What do you need today? Select all that apply.</p>
     <div class="field">
@@ -156,7 +155,8 @@
   </div>
 </div>
 
-<div class="card" id="success-card" style="display:none">
+<!-- SUCCESS SCREEN -->
+<div class="card hidden" id="success-card">
   <div class="success-wrap">
     <div class="success-icon">
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -168,112 +168,138 @@
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxOTUFkUIkISCUlmlJn-h1pS3QtHwhF1rUWKjLb5XB6HVy14VN6_PKbYfOlUpZyU0/exec';
-let knownClients = [];
+// The address of your Google Apps Script web app
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzr2FOZwgTrggc7Tz3tRrIdRlffWgYWDFKpe5WbVjw5STvotLhN6na86ic_XACziDB/exec';
+
+let kioskPin = '';
 let selectedSvcs = [];
 let currentStep = 1;
-let returningClient = null;
+let lookupTimer = null;
+let lookupCounter = 0;
 
 document.getElementById('dob').max = new Date().toISOString().split('T')[0];
 
-async function loadNames() {
+// ---------- Talking to the Google script ----------
+async function callScript(payload) {
+  payload.pin = kioskPin;
+  const response = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    // text/plain avoids browser permission problems with Google scripts
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  return await response.json();
+}
+
+// ---------- Staff PIN ----------
+function showPinScreen(message) {
+  document.getElementById('main-card').classList.add('hidden');
+  document.getElementById('success-card').classList.add('hidden');
+  document.getElementById('pin-card').classList.remove('hidden');
+  document.getElementById('pin').value = '';
+  document.getElementById('pin-err').textContent = message || '';
+}
+
+async function submitPin() {
+  const pin = document.getElementById('pin').value.trim();
+  const btn = document.getElementById('pin-btn');
+  const err = document.getElementById('pin-err');
+  if (!pin) { document.getElementById('pin').focus(); return; }
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  err.textContent = '';
+  kioskPin = pin;
   try {
-    const r = await fetch(SCRIPT_URL);
-    const d = await r.json();
-    knownClients = d.names || [];
-  } catch(e) {}
-}
-loadNames();
-
-function onNameInput() {
-  const fn = document.getElementById('fname').value.trim().toLowerCase();
-  const ln = document.getElementById('lname').value.trim().toLowerCase();
-  const acList = document.getElementById('ac-list');
-  const confirmBox = document.getElementById('confirm-box');
-  if (fn.length < 2) { acList.style.display='none'; confirmBox.style.display='none'; returningClient=null; return; }
-  const matches = knownClients.filter(c =>
-    c.firstName && c.firstName.toLowerCase().startsWith(fn) &&
-    (!ln || (c.lastName && c.lastName.toLowerCase().startsWith(ln)))
-  );
-  if (matches.length > 0 && !ln) {
-    acList.innerHTML = matches.slice(0,6).map(c =>
-      `<div class="autocomplete-item" onclick="selectClient('${c.firstName}','${c.lastName}','${c.dob}')">${c.firstName} ${c.lastName}</div>`
-    ).join('');
-    acList.style.display = 'block';
-  } else {
-    acList.style.display = 'none';
-  }
-  if (fn && ln) {
-    const exact = knownClients.find(c =>
-      c.firstName && c.lastName &&
-      c.firstName.toLowerCase() === fn &&
-      c.lastName.toLowerCase() === ln
-    );
-    if (exact) {
-      returningClient = exact;
-      document.getElementById('confirm-text').textContent = 'Welcome back, ' + exact.firstName + ' ' + exact.lastName + '! Is that you?';
-      confirmBox.style.display = 'flex';
+    // A lookup with blank names is a safe way to test the code
+    const result = await callScript({ action: 'lookup', firstName: '', lastName: '' });
+    if (result && result.ok) {
+      try { sessionStorage.setItem('kioskPin', pin); } catch (e) {}
+      document.getElementById('pin-card').classList.add('hidden');
+      document.getElementById('main-card').classList.remove('hidden');
     } else {
-      confirmBox.style.display = 'none';
-      returningClient = null;
+      kioskPin = '';
+      err.textContent = 'That code is not correct. Please try again.';
     }
+  } catch (e) {
+    kioskPin = '';
+    err.textContent = 'Could not connect. Check the internet and try again.';
   }
+  btn.disabled = false;
+  btn.textContent = 'Start';
 }
 
-function selectClient(fn, ln, dob) {
-  document.getElementById('fname').value = fn;
-  document.getElementById('lname').value = ln;
-  document.getElementById('ac-list').style.display = 'none';
-  returningClient = {firstName: fn, lastName: ln, dob: dob};
-  document.getElementById('confirm-text').textContent = 'Welcome back, ' + fn + ' ' + ln + '! Is that you?';
-  document.getElementById('confirm-box').style.display = 'flex';
+document.getElementById('pin').addEventListener('keydown', function (ev) {
+  if (ev.key === 'Enter') submitPin();
+});
+
+// If the code was already entered earlier this session, skip the PIN screen
+(function tryRememberedPin() {
+  try {
+    const saved = sessionStorage.getItem('kioskPin');
+    if (saved) {
+      kioskPin = saved;
+      document.getElementById('pin-card').classList.add('hidden');
+      document.getElementById('main-card').classList.remove('hidden');
+    }
+  } catch (e) {}
+})();
+
+// ---------- Step 1: name and "welcome back" ----------
+function onNameInput() {
+  const box = document.getElementById('welcome-back');
+  box.classList.add('hidden');
+  document.getElementById('step1-err').textContent = '';
+  clearTimeout(lookupTimer);
+  const fn = document.getElementById('fname').value.trim();
+  const ln = document.getElementById('lname').value.trim();
+  if (fn.length < 2 || ln.length < 2) return;
+  lookupTimer = setTimeout(async () => {
+    const myCall = ++lookupCounter;
+    try {
+      const result = await callScript({ action: 'lookup', firstName: fn, lastName: ln });
+      if (myCall !== lookupCounter) return; // names changed since this check began
+      if (result && result.ok && result.found) {
+        box.textContent = 'Welcome back, ' + fn + '! Please continue to check in.';
+        box.classList.remove('hidden');
+      }
+    } catch (e) { /* the welcome-back message is optional, so ignore errors */ }
+  }, 500);
 }
 
-function confirmReturning() {
-  if (returningClient && returningClient.dob) {
-    document.getElementById('dob').value = returningClient.dob;
-  }
-  document.getElementById('confirm-box').style.display = 'none';
-}
-
-function dismissConfirm() {
-  returningClient = null;
-  document.getElementById('confirm-box').style.display = 'none';
-  document.getElementById('fname').value = '';
-  document.getElementById('lname').value = '';
-  document.getElementById('dob').value = '';
-}
-
+// ---------- Moving between steps ----------
 function goStep(n) {
-  if (n===2 && !document.getElementById('fname').value.trim()) { document.getElementById('fname').focus(); return; }
-  if (n===2 && !document.getElementById('lname').value.trim()) { document.getElementById('lname').focus(); return; }
-  if (n===3 && !document.getElementById('dob').value) { document.getElementById('dob').focus(); return; }
-  if (n===4 && !document.getElementById('housing').value) { document.getElementById('housing').focus(); return; }
-  document.getElementById('step-'+currentStep).style.display='none';
-  document.getElementById('d'+currentStep).classList.remove('on');
+  if (n === 2 && !document.getElementById('fname').value.trim()) { document.getElementById('fname').focus(); return; }
+  if (n === 2 && !document.getElementById('lname').value.trim()) { document.getElementById('lname').focus(); return; }
+  if (n === 3 && !document.getElementById('dob').value) { document.getElementById('dob').focus(); return; }
+  if (n === 4 && !document.getElementById('housing').value) { document.getElementById('housing').focus(); return; }
+  document.getElementById('step-' + currentStep).classList.add('hidden');
+  document.getElementById('d' + currentStep).classList.remove('on');
   currentStep = n;
-  document.getElementById('step-'+n).style.display='block';
-  document.getElementById('d'+n).classList.add('on');
+  document.getElementById('step-' + n).classList.remove('hidden');
+  document.getElementById('d' + n).classList.add('on');
 }
 
 function toggleSvc(btn, svc) {
   if (btn.classList.contains('on')) {
     btn.classList.remove('on');
-    selectedSvcs = selectedSvcs.filter(s => s!==svc);
+    selectedSvcs = selectedSvcs.filter(s => s !== svc);
   } else {
     btn.classList.add('on');
     selectedSvcs.push(svc);
   }
-  document.getElementById('svc-hint').textContent = selectedSvcs.length ? 'Selected: '+selectedSvcs.join(', ') : '';
-  document.getElementById('submit-btn').disabled = selectedSvcs.length===0;
+  document.getElementById('svc-hint').textContent = selectedSvcs.length ? 'Selected: ' + selectedSvcs.join(', ') : '';
+  document.getElementById('submit-btn').disabled = selectedSvcs.length === 0;
 }
 
+// ---------- Saving the check-in ----------
 async function submitForm() {
   const btn = document.getElementById('submit-btn');
+  const err = document.getElementById('submit-err');
   btn.disabled = true;
   btn.textContent = 'Saving...';
-  document.getElementById('submit-err').textContent = '';
+  err.textContent = '';
   const payload = {
+    action: 'checkin',
     firstName: document.getElementById('fname').value.trim(),
     lastName: document.getElementById('lname').value.trim(),
     dob: document.getElementById('dob').value,
@@ -281,44 +307,49 @@ async function submitForm() {
     services: selectedSvcs.join(', ')
   };
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    document.getElementById('main-card').style.display='none';
-    document.getElementById('success-card').style.display='block';
-    document.getElementById('success-name').textContent = 'Thanks, '+payload.firstName+'!';
-    document.getElementById('success-svcs').textContent = 'Checked in for: '+payload.services+'. A team member will be with you shortly.';
-    knownClients.push({firstName:payload.firstName, lastName:payload.lastName, dob:payload.dob});
-  } catch(e) {
-    document.getElementById('submit-err').textContent = 'Could not save. Please try again.';
+    const result = await callScript(payload);
+    if (result && result.ok) {
+      document.getElementById('main-card').classList.add('hidden');
+      document.getElementById('success-card').classList.remove('hidden');
+      document.getElementById('success-name').textContent = 'Thanks, ' + payload.firstName + '!';
+      document.getElementById('success-svcs').textContent = 'Checked in for: ' + payload.services + '. A team member will be with you shortly.';
+    } else if (result && result.error === 'unauthorized') {
+      try { sessionStorage.removeItem('kioskPin'); } catch (e) {}
+      kioskPin = '';
+      showPinScreen('The kiosk code needs to be entered again.');
+    } else {
+      err.textContent = 'Could not save. Please try again or ask a team member.';
+      btn.disabled = false;
+      btn.textContent = 'Check in';
+    }
+  } catch (e) {
+    err.textContent = 'Could not save. Please try again or ask a team member.';
     btn.disabled = false;
     btn.textContent = 'Check in';
   }
 }
 
+// ---------- Reset for the next person ----------
 function restart() {
-  document.getElementById('fname').value='';
-  document.getElementById('lname').value='';
-  document.getElementById('dob').value='';
-  document.getElementById('housing').value='';
-  document.getElementById('ac-list').style.display='none';
-  document.getElementById('confirm-box').style.display='none';
-  selectedSvcs=[];
-  returningClient=null;
-  document.querySelectorAll('.svc-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('svc-hint').textContent='';
-  document.getElementById('submit-btn').disabled=true;
-  document.getElementById('submit-btn').textContent='Check in';
-  document.getElementById('d'+currentStep).classList.remove('on');
-  currentStep=1;
+  document.getElementById('fname').value = '';
+  document.getElementById('lname').value = '';
+  document.getElementById('dob').value = '';
+  document.getElementById('housing').value = '';
+  document.getElementById('welcome-back').classList.add('hidden');
+  document.getElementById('step1-err').textContent = '';
+  document.getElementById('submit-err').textContent = '';
+  selectedSvcs = [];
+  document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('svc-hint').textContent = '';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-btn').textContent = 'Check in';
+  document.getElementById('step-' + currentStep).classList.add('hidden');
+  document.getElementById('d' + currentStep).classList.remove('on');
+  currentStep = 1;
   document.getElementById('d1').classList.add('on');
-  document.getElementById('step-4').style.display='none';
-  document.getElementById('step-1').style.display='block';
-  document.getElementById('success-card').style.display='none';
-  document.getElementById('main-card').style.display='block';
+  document.getElementById('step-1').classList.remove('hidden');
+  document.getElementById('success-card').classList.add('hidden');
+  document.getElementById('main-card').classList.remove('hidden');
 }
 </script>
 </body>
