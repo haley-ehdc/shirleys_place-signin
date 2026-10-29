@@ -79,13 +79,12 @@
     <p class="sub">Please enter your name to check in</p>
     <div class="field">
       <label for="fname">First name</label>
-      <input type="text" id="fname" placeholder="First name" autocomplete="off" oninput="onNameInput()">
+      <input type="text" id="fname" placeholder="First name" autocomplete="off">
     </div>
     <div class="field">
       <label for="lname">Last name</label>
-      <input type="text" id="lname" placeholder="Last name" autocomplete="off" oninput="onNameInput()">
+      <input type="text" id="lname" placeholder="Last name" autocomplete="off">
     </div>
-    <div id="welcome-back" class="welcome-back hidden"></div>
     <button class="main-btn" onclick="goStep(2)">Continue</button>
     <div class="err" id="step1-err"></div>
   </div>
@@ -122,32 +121,7 @@
     <h1>Services needed</h1>
     <p class="sub">What do you need today? Select all that apply.</p>
     <div class="field">
-      <div class="services-grid">
-        <button class="svc-btn" onclick="toggleSvc(this,'Food')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7c0-1.4 1.1-2.5 2.5-2.5S7 5.6 7 7v10H2V7zM7 12h5M7 7c0-1.4 1.1-2.5 2.5-2.5S12 5.6 12 7v10H7"/><path d="M16 3c0 0 4 2 4 9H16V3z"/><line x1="16" y1="12" x2="20" y2="12"/></svg>
-          Food
-        </button>
-        <button class="svc-btn" onclick="toggleSvc(this,'Shower')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12a8 8 0 0 1 16 0"/><line x1="8" y1="16" x2="8" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="16" y1="16" x2="16" y2="20"/></svg>
-          Shower
-        </button>
-        <button class="svc-btn" onclick="toggleSvc(this,'Laundry')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="13" r="4"/><line x1="8" y1="7" x2="8" y2="7"/><line x1="12" y1="7" x2="14" y2="7"/></svg>
-          Laundry
-        </button>
-        <button class="svc-btn" onclick="toggleSvc(this,'Clothing')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
-          Clothing
-        </button>
-        <button class="svc-btn" onclick="toggleSvc(this,'Toiletries')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2h4l2 4H3V2z"/><rect x="3" y="6" width="6" height="14" rx="1"/><path d="M15 2s2 1.5 2 5-2 5-2 5V2z"/><rect x="13" y="12" width="6" height="8" rx="1"/></svg>
-          Toiletries
-        </button>
-        <button class="svc-btn" onclick="toggleSvc(this,'Other')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-          Other
-        </button>
-      </div>
+      <div class="services-grid" id="services-grid"></div>
       <div class="svc-hint" id="svc-hint"></div>
     </div>
     <button class="main-btn" id="submit-btn" onclick="submitForm()" disabled>Check in</button>
@@ -169,13 +143,12 @@
 
 <script>
 // The address of your Google Apps Script web app
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzr2FOZwgTrggc7Tz3tRrIdRlffWgYWDFKpe5WbVjw5STvotLhN6na86ic_XACziDB/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwO5MP2Hn_ALUxoHL3wP_ZK9SyTInuugl_gwRzqbaGjlWdjXZwTudBHUMSlGiG_cHSD/exec';
 
 let kioskPin = '';
 let selectedSvcs = [];
 let currentStep = 1;
-let lookupTimer = null;
-let lookupCounter = 0;
+const CHECK_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>';
 
 document.getElementById('dob').max = new Date().toISOString().split('T')[0];
 
@@ -210,12 +183,9 @@ async function submitPin() {
   err.textContent = '';
   kioskPin = pin;
   try {
-    // A lookup with blank names is a safe way to test the code
-    const result = await callScript({ action: 'lookup', firstName: '', lastName: '' });
-    if (result && result.ok) {
+    const ok = await startKiosk();
+    if (ok) {
       try { sessionStorage.setItem('kioskPin', pin); } catch (e) {}
-      document.getElementById('pin-card').classList.add('hidden');
-      document.getElementById('main-card').classList.remove('hidden');
     } else {
       kioskPin = '';
       err.textContent = 'That code is not correct. Please try again.';
@@ -232,39 +202,47 @@ document.getElementById('pin').addEventListener('keydown', function (ev) {
   if (ev.key === 'Enter') submitPin();
 });
 
-// If the code was already entered earlier this session, skip the PIN screen
-(function tryRememberedPin() {
-  try {
-    const saved = sessionStorage.getItem('kioskPin');
-    if (saved) {
-      kioskPin = saved;
-      document.getElementById('pin-card').classList.add('hidden');
-      document.getElementById('main-card').classList.remove('hidden');
-    }
-  } catch (e) {}
-})();
-
-// ---------- Step 1: name and "welcome back" ----------
-function onNameInput() {
-  const box = document.getElementById('welcome-back');
-  box.classList.add('hidden');
-  document.getElementById('step1-err').textContent = '';
-  clearTimeout(lookupTimer);
-  const fn = document.getElementById('fname').value.trim();
-  const ln = document.getElementById('lname').value.trim();
-  if (fn.length < 2 || ln.length < 2) return;
-  lookupTimer = setTimeout(async () => {
-    const myCall = ++lookupCounter;
-    try {
-      const result = await callScript({ action: 'lookup', firstName: fn, lastName: ln });
-      if (myCall !== lookupCounter) return; // names changed since this check began
-      if (result && result.ok && result.found) {
-        box.textContent = 'Welcome back, ' + fn + '! Please continue to check in.';
-        box.classList.remove('hidden');
-      }
-    } catch (e) { /* the welcome-back message is optional, so ignore errors */ }
-  }, 500);
+// Loads the service buttons from the Lists tab, then shows the form.
+// Returns false if the kiosk code was rejected.
+async function startKiosk() {
+  const result = await callScript({ action: 'config' });
+  if (!result || !result.ok) return false;
+  renderServices(result.services || []);
+  document.getElementById('pin-card').classList.add('hidden');
+  document.getElementById('main-card').classList.remove('hidden');
+  return true;
 }
+
+function renderServices(list) {
+  const grid = document.getElementById('services-grid');
+  grid.innerHTML = '';
+  list.forEach(function (svc) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'svc-btn';
+    b.innerHTML = CHECK_ICON;
+    b.appendChild(document.createTextNode(svc));
+    b.onclick = function () { toggleSvc(b, svc); };
+    grid.appendChild(b);
+  });
+}
+
+// If the code was already entered earlier this session, skip the PIN screen
+(async function tryRememberedPin() {
+  let saved = null;
+  try { saved = sessionStorage.getItem('kioskPin'); } catch (e) {}
+  if (!saved) return;
+  kioskPin = saved;
+  try {
+    if (!(await startKiosk())) {
+      try { sessionStorage.removeItem('kioskPin'); } catch (e) {}
+      kioskPin = '';
+      showPinScreen('The kiosk code needs to be entered again.');
+    }
+  } catch (e) {
+    showPinScreen('Could not connect. Check the internet and try again.');
+  }
+})();
 
 // ---------- Moving between steps ----------
 function goStep(n) {
@@ -335,7 +313,6 @@ function restart() {
   document.getElementById('lname').value = '';
   document.getElementById('dob').value = '';
   document.getElementById('housing').value = '';
-  document.getElementById('welcome-back').classList.add('hidden');
   document.getElementById('step1-err').textContent = '';
   document.getElementById('submit-err').textContent = '';
   selectedSvcs = [];
