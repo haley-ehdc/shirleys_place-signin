@@ -2,48 +2,107 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Everyone Home DC — Check In</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a3a5c; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
-  .logo-wrap { margin-bottom: 1.5rem; text-align: center; }
-  .logo-wrap img { height: 110px; width: auto; }
-  .card { background: #fff; border-radius: 16px; padding: 2rem 2.5rem; width: 100%; max-width: 520px; }
-  h1 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; text-align: center; }
-  .sub { font-size: 15px; color: #666; text-align: center; margin-bottom: 1.75rem; }
-  .field { margin-bottom: 1.25rem; }
-  label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; }
-  input[type="text"], input[type="password"], input[type="date"], select {
-    width: 100%; padding: 12px 14px; border-radius: 10px;
-    border: 1px solid #ccc; font-size: 16px; background: #fff;
-    color: #1a1a1a; font-family: inherit; appearance: none;
-    -webkit-appearance: none;
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a3a5c; color: #1a1a1a;
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 1.5rem 1rem;
+    -webkit-tap-highlight-color: transparent;
   }
-  input:focus, select:focus { outline: none; border-color: #1a3a5c; box-shadow: 0 0 0 3px rgba(26,58,92,0.12); }
-  .welcome-back { background: #e8f0f8; border: 1px solid #b0c8e8; border-radius: 10px; padding: 12px 16px; margin-bottom: 1.25rem; font-size: 14px; color: #1a3a5c; }
+  button, input, select { font-family: inherit; touch-action: manipulation; }
+  button { -webkit-user-select: none; user-select: none; }
+
+  .logo-wrap { margin-bottom: 1.25rem; text-align: center; }
+  .logo-wrap img { height: 100px; width: auto; }
+
+  .card { background: #fff; border-radius: 18px; padding: 2rem 2.25rem; width: 100%; max-width: 600px; }
+  h1 { font-size: 26px; font-weight: 600; margin-bottom: 6px; text-align: center; }
+  .sub { font-size: 17px; color: #555; text-align: center; margin-bottom: 1.5rem; }
+
+  .field { margin-bottom: 1.25rem; }
+  label { display: block; font-size: 15px; color: #444; margin-bottom: 8px; font-weight: 500; }
+  input[type="text"], input[type="password"] {
+    width: 100%; height: 60px; padding: 0 16px; border-radius: 12px;
+    border: 2px solid #c8c8c8; font-size: 20px; background: #fff; color: #1a1a1a;
+  }
+  input:focus { outline: none; border-color: #1a3a5c; box-shadow: 0 0 0 4px rgba(26,58,92,0.15); }
+
+  /* Date of birth: three typed boxes */
+  .dob-row { display: flex; gap: 12px; align-items: flex-end; }
+  .dob-part { flex: 1; }
+  .dob-part.year { flex: 1.5; }
+  .dob-part input { text-align: center; font-size: 26px; letter-spacing: 1px; }
+  .dob-sep { font-size: 28px; color: #999; padding-bottom: 12px; }
+
+  /* Big tap buttons for housing and services */
+  .choice-list { display: grid; gap: 10px; }
   .services-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .svc-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; border: 1px solid #ccc; background: #fff; color: #1a1a1a; font-size: 15px; cursor: pointer; font-family: inherit; transition: all 0.15s; text-align: left; }
-  .svc-btn svg { flex-shrink: 0; opacity: 0.5; }
-  .svc-btn.on { background: #e8f0f8; border-color: #1a3a5c; color: #1a3a5c; }
-  .svc-btn.on svg { opacity: 1; stroke: #1a3a5c; }
-  .svc-hint { font-size: 13px; color: #666; margin-top: 8px; min-height: 18px; }
-  .main-btn { width: 100%; padding: 14px; border-radius: 10px; background: #1a3a5c; color: #fff; border: none; font-size: 17px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 0.75rem; transition: opacity 0.15s; }
-  .main-btn:hover { opacity: 0.88; }
+  .choice-btn {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    min-height: 60px; padding: 12px 16px; border-radius: 12px;
+    border: 2px solid #c8c8c8; background: #fff; color: #1a1a1a;
+    font-size: 18px; text-align: left; cursor: pointer;
+  }
+  .choice-btn svg { flex-shrink: 0; opacity: 0.35; }
+  .choice-btn.on { background: #e8f0f8; border-color: #1a3a5c; color: #1a3a5c; font-weight: 600; }
+  .choice-btn.on svg { opacity: 1; }
+  .hint { font-size: 15px; color: #555; margin-top: 10px; min-height: 20px; }
+
+  .btn-row { display: flex; gap: 12px; margin-top: 1rem; }
+  .main-btn {
+    flex: 1; height: 62px; border-radius: 12px; background: #1a3a5c; color: #fff;
+    border: none; font-size: 20px; font-weight: 600; cursor: pointer;
+  }
+  .main-btn:active { opacity: 0.85; }
   .main-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-  .dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.5rem; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; transition: background 0.2s; }
+  .back-btn {
+    height: 62px; padding: 0 22px; border-radius: 12px; background: #f2f2f2; color: #1a1a1a;
+    border: 2px solid #c8c8c8; font-size: 18px; cursor: pointer;
+  }
+
+  .dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 1.5rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
   .dot.on { background: #1a3a5c; }
-  .success-wrap { text-align: center; padding: 1.5rem 0; }
-  .success-icon { width: 72px; height: 72px; border-radius: 50%; background: #d4edda; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
-  .success-wrap h2 { font-size: 24px; font-weight: 500; margin-bottom: 10px; color: #1a1a1a; }
-  .success-wrap p { color: #555; font-size: 16px; margin-bottom: 2rem; line-height: 1.6; }
-  .restart-btn { padding: 12px 32px; border-radius: 10px; border: 1px solid #ccc; background: #f5f5f5; color: #1a1a1a; font-size: 15px; cursor: pointer; font-family: inherit; }
-  .err { font-size: 13px; color: #c0392b; margin-top: 8px; min-height: 18px; }
-  .hidden { display: none; }
+
+  .err { font-size: 16px; color: #c0392b; margin-top: 10px; min-height: 20px; text-align: center; }
+
+  .success-wrap { text-align: center; padding: 1.25rem 0; }
+  .success-icon { width: 84px; height: 84px; border-radius: 50%; background: #d4edda; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+  .success-wrap h2 { font-size: 28px; font-weight: 600; margin-bottom: 10px; }
+  .success-wrap p { color: #444; font-size: 18px; margin-bottom: 1.5rem; line-height: 1.5; }
+  .countdown { font-size: 15px; color: #777; margin-top: 12px; }
+
+  .hidden { display: none !important; }
+
+  /* Phones and narrow tablets in portrait */
   @media (max-width: 480px) {
-    .card { padding: 1.5rem 1.25rem; }
+    .card { padding: 1.5rem 1.1rem; }
     .services-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 23px; }
+  }
+  /* Tablets and laptops in landscape: short screens */
+  @media (max-height: 850px) {
+    body { padding: 0.75rem 1rem; justify-content: flex-start; }
+    .logo-wrap { margin-bottom: 0.75rem; }
+    .logo-wrap img { height: 56px; }
+    .card { padding: 1.25rem 1.75rem; }
+    .sub { margin-bottom: 1rem; }
+    .dots { margin-bottom: 1rem; }
+    .choice-btn { min-height: 52px; }
+  }
+  @media (min-width: 900px) and (max-height: 850px) {
+    .card { max-width: 760px; }
+    .services-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .choice-list { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -59,9 +118,11 @@
   <p class="sub">Enter the kiosk code to begin</p>
   <div class="field">
     <label for="pin">Kiosk code</label>
-    <input type="password" id="pin" autocomplete="off" inputmode="numeric" placeholder="Kiosk code">
+    <input type="password" id="pin" autocomplete="off" inputmode="numeric" enterkeyhint="go" placeholder="Kiosk code">
   </div>
-  <button class="main-btn" id="pin-btn" onclick="submitPin()">Start</button>
+  <div class="btn-row">
+    <button class="main-btn" id="pin-btn" onclick="submitPin()">Start</button>
+  </div>
   <div class="err" id="pin-err"></div>
 </div>
 
@@ -74,58 +135,76 @@
     <div class="dot" id="d4"></div>
   </div>
 
+  <!-- Step 1: name -->
   <div id="step-1">
     <h1>Welcome</h1>
     <p class="sub">Please enter your name to check in</p>
     <div class="field">
       <label for="fname">First name</label>
-      <input type="text" id="fname" placeholder="First name" autocomplete="off">
+      <input type="text" id="fname" placeholder="First name" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="next">
     </div>
     <div class="field">
       <label for="lname">Last name</label>
-      <input type="text" id="lname" placeholder="Last name" autocomplete="off">
+      <input type="text" id="lname" placeholder="Last name" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="next">
     </div>
-    <button class="main-btn" onclick="goStep(2)">Continue</button>
-    <div class="err" id="step1-err"></div>
+    <div class="btn-row">
+      <button class="main-btn" onclick="goStep(2)">Continue</button>
+    </div>
+    <div class="err" id="err-1"></div>
   </div>
 
+  <!-- Step 2: date of birth, typed -->
   <div id="step-2" class="hidden">
     <h1>Date of birth</h1>
-    <p class="sub">Please enter your date of birth</p>
+    <p class="sub">Type your birthday as numbers, for example 03 / 14 / 1985</p>
     <div class="field">
-      <label for="dob">Date of birth</label>
-      <input type="date" id="dob">
+      <div class="dob-row">
+        <div class="dob-part">
+          <label for="dob-m">Month</label>
+          <input type="text" id="dob-m" inputmode="numeric" pattern="[0-9]*" data-max="2" placeholder="MM" autocomplete="off" enterkeyhint="next">
+        </div>
+        <div class="dob-sep">/</div>
+        <div class="dob-part">
+          <label for="dob-d">Day</label>
+          <input type="text" id="dob-d" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-max="2" placeholder="DD" autocomplete="off" enterkeyhint="next">
+        </div>
+        <div class="dob-sep">/</div>
+        <div class="dob-part year">
+          <label for="dob-y">Year</label>
+          <input type="text" id="dob-y" inputmode="numeric" pattern="[0-9]*" maxlength="4" data-max="4" placeholder="YYYY" autocomplete="off" enterkeyhint="next">
+        </div>
+      </div>
     </div>
-    <button class="main-btn" onclick="goStep(3)">Continue</button>
+    <div class="btn-row">
+      <button class="back-btn" onclick="goStep(1)">Back</button>
+      <button class="main-btn" onclick="goStep(3)">Continue</button>
+    </div>
+    <div class="err" id="err-2"></div>
   </div>
 
+  <!-- Step 3: housing -->
   <div id="step-3" class="hidden">
     <h1>Housing situation</h1>
     <p class="sub">What best describes where you are staying?</p>
-    <div class="field">
-      <label for="housing">Current housing situation</label>
-      <select id="housing">
-        <option value="" disabled selected>Select an option</option>
-        <option>Sleeping rough / outdoors</option>
-        <option>Staying in a shelter</option>
-        <option>Staying with friends or family</option>
-        <option>Temporary or transitional housing</option>
-        <option>Stable housing</option>
-        <option>Prefer not to say</option>
-      </select>
+    <div class="choice-list" id="housing-list"></div>
+    <div class="btn-row">
+      <button class="back-btn" onclick="goStep(2)">Back</button>
+      <button class="main-btn" onclick="goStep(4)">Continue</button>
     </div>
-    <button class="main-btn" onclick="goStep(4)">Continue</button>
+    <div class="err" id="err-3"></div>
   </div>
 
+  <!-- Step 4: services -->
   <div id="step-4" class="hidden">
     <h1>Services needed</h1>
     <p class="sub">What do you need today? Select all that apply.</p>
-    <div class="field">
-      <div class="services-grid" id="services-grid"></div>
-      <div class="svc-hint" id="svc-hint"></div>
+    <div class="services-grid" id="services-grid"></div>
+    <div class="hint" id="svc-hint"></div>
+    <div class="btn-row">
+      <button class="back-btn" onclick="goStep(3)">Back</button>
+      <button class="main-btn" id="submit-btn" onclick="submitForm()" disabled>Check in</button>
     </div>
-    <button class="main-btn" id="submit-btn" onclick="submitForm()" disabled>Check in</button>
-    <div class="err" id="submit-err"></div>
+    <div class="err" id="err-4"></div>
   </div>
 </div>
 
@@ -133,11 +212,14 @@
 <div class="card hidden" id="success-card">
   <div class="success-wrap">
     <div class="success-icon">
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
     <h2 id="success-name">Checked in!</h2>
     <p id="success-svcs">A team member will be with you shortly.</p>
-    <button class="restart-btn" onclick="restart()">New check-in</button>
+    <div class="btn-row">
+      <button class="main-btn" onclick="restart()">Done</button>
+    </div>
+    <div class="countdown" id="countdown"></div>
   </div>
 </div>
 
@@ -145,87 +227,311 @@
 // The address of your Google Apps Script web app
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwO5MP2Hn_ALUxoHL3wP_ZK9SyTInuugl_gwRzqbaGjlWdjXZwTudBHUMSlGiG_cHSD/exec';
 
+// Housing options. The first three count as "homeless" in the spreadsheet,
+// so keep their wording matched to HOMELESS_YES in Code.gs.
+const HOUSING = [
+  'Sleeping rough / outdoors',
+  'Staying in a shelter',
+  'Temporary or transitional housing',
+  'Staying with friends or family',
+  'Stable housing',
+  'Prefer not to say'
+];
+
+const IDLE_RESET_SECONDS = 90;    // clears a half-finished check-in if nobody touches the screen
+const SUCCESS_RESET_SECONDS = 10; // success screen returns to the start on its own
+
+const CHECK_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>';
+
+const $ = id => document.getElementById(id);
 let kioskPin = '';
 let selectedSvcs = [];
+let housing = '';
 let currentStep = 1;
-const CHECK_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a3a5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>';
-
-document.getElementById('dob').max = new Date().toISOString().split('T')[0];
+let idleTimer = null;
+let successTimer = null;
 
 // ---------- Talking to the Google script ----------
 async function callScript(payload) {
   payload.pin = kioskPin;
-  const response = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    // text/plain avoids browser permission problems with Google scripts
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(payload)
-  });
-  return await response.json();
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 25000); // don't hang forever on bad wifi
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids browser permission problems with Google scripts
+      body: JSON.stringify(payload),
+      signal: ctrl.signal
+    });
+    return await response.json();
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 // ---------- Staff PIN ----------
 function showPinScreen(message) {
-  document.getElementById('main-card').classList.add('hidden');
-  document.getElementById('success-card').classList.add('hidden');
-  document.getElementById('pin-card').classList.remove('hidden');
-  document.getElementById('pin').value = '';
-  document.getElementById('pin-err').textContent = message || '';
+  $('main-card').classList.add('hidden');
+  $('success-card').classList.add('hidden');
+  $('pin-card').classList.remove('hidden');
+  $('pin').value = '';
+  $('pin-err').textContent = message || '';
 }
 
 async function submitPin() {
-  const pin = document.getElementById('pin').value.trim();
-  const btn = document.getElementById('pin-btn');
-  const err = document.getElementById('pin-err');
-  if (!pin) { document.getElementById('pin').focus(); return; }
+  const pin = $('pin').value.trim();
+  const btn = $('pin-btn');
+  if (!pin) { $('pin').focus(); return; }
   btn.disabled = true;
   btn.textContent = 'Checking...';
-  err.textContent = '';
+  $('pin-err').textContent = '';
   kioskPin = pin;
   try {
-    const ok = await startKiosk();
-    if (ok) {
+    if (await startKiosk()) {
       try { sessionStorage.setItem('kioskPin', pin); } catch (e) {}
     } else {
       kioskPin = '';
-      err.textContent = 'That code is not correct. Please try again.';
+      $('pin-err').textContent = 'That code is not correct. Please try again.';
     }
   } catch (e) {
     kioskPin = '';
-    err.textContent = 'Could not connect. Check the internet and try again.';
+    $('pin-err').textContent = 'Could not connect. Check the internet and try again.';
   }
   btn.disabled = false;
   btn.textContent = 'Start';
 }
-
-document.getElementById('pin').addEventListener('keydown', function (ev) {
-  if (ev.key === 'Enter') submitPin();
-});
+$('pin').addEventListener('keydown', ev => { if (ev.key === 'Enter') submitPin(); });
 
 // Loads the service buttons from the Lists tab, then shows the form.
-// Returns false if the kiosk code was rejected.
 async function startKiosk() {
   const result = await callScript({ action: 'config' });
   if (!result || !result.ok) return false;
   renderServices(result.services || []);
-  document.getElementById('pin-card').classList.add('hidden');
-  document.getElementById('main-card').classList.remove('hidden');
+  $('pin-card').classList.add('hidden');
+  $('main-card').classList.remove('hidden');
   return true;
 }
 
-function renderServices(list) {
-  const grid = document.getElementById('services-grid');
-  grid.innerHTML = '';
-  list.forEach(function (svc) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'svc-btn';
-    b.innerHTML = CHECK_ICON;
-    b.appendChild(document.createTextNode(svc));
-    b.onclick = function () { toggleSvc(b, svc); };
-    grid.appendChild(b);
-  });
+// ---------- Building the buttons ----------
+function makeChoice(text, onTap) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'choice-btn';
+  b.innerHTML = CHECK_ICON;
+  b.appendChild(document.createTextNode(text));
+  b.addEventListener('click', () => onTap(b));
+  return b;
 }
+
+function renderServices(list) {
+  const grid = $('services-grid');
+  grid.innerHTML = '';
+  if (!list.length) {
+    grid.innerHTML = '<p class="hint">No services are set to show on the kiosk. Ask a team member.</p>';
+    return;
+  }
+  list.forEach(svc => grid.appendChild(makeChoice(svc, b => toggleSvc(b, svc))));
+}
+
+function renderHousing() {
+  const box = $('housing-list');
+  box.innerHTML = '';
+  HOUSING.forEach(opt => box.appendChild(makeChoice(opt, b => {
+    box.querySelectorAll('.choice-btn').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    housing = opt;
+    $('err-3').textContent = '';
+  })));
+}
+renderHousing();
+
+function toggleSvc(btn, svc) {
+  if (btn.classList.toggle('on')) selectedSvcs.push(svc);
+  else selectedSvcs = selectedSvcs.filter(s => s !== svc);
+  $('svc-hint').textContent = selectedSvcs.length ? 'Selected: ' + selectedSvcs.join(', ') : '';
+  $('submit-btn').disabled = selectedSvcs.length === 0;
+}
+
+// ---------- Date of birth (typed) ----------
+const dobM = $('dob-m'), dobD = $('dob-d'), dobY = $('dob-y');
+
+function digitsOnly(el) { el.value = el.value.replace(/\D/g, '').slice(0, Number(el.dataset.max)); }
+
+// Someone pasting or typing "03/14/1985" into the month box fills all three
+function spreadFullDate(el) {
+  const m = el.value.match(/^(\d{1,2})\D+(\d{1,2})\D+(\d{2,4})$/);
+  if (!m) return false;
+  dobM.value = m[1]; dobD.value = m[2]; dobY.value = m[3];
+  dobY.focus();
+  return true;
+}
+
+dobM.addEventListener('input', () => {
+  if (spreadFullDate(dobM)) return;
+  digitsOnly(dobM);
+  // Move on after 2 digits, or after 1 digit that can't start a 2-digit month (2-9)
+  if (dobM.value.length === 2 || /^[2-9]$/.test(dobM.value)) dobD.focus();
+});
+dobD.addEventListener('input', () => {
+  digitsOnly(dobD);
+  if (dobD.value.length === 2 || /^[4-9]$/.test(dobD.value)) dobY.focus();
+});
+dobY.addEventListener('input', () => {
+  digitsOnly(dobY);
+  $('err-2').textContent = '';
+});
+// Backspace in an empty box goes back to the previous one
+dobD.addEventListener('keydown', e => { if (e.key === 'Backspace' && !dobD.value) dobM.focus(); });
+dobY.addEventListener('keydown', e => { if (e.key === 'Backspace' && !dobY.value) dobD.focus(); });
+
+// Returns 'yyyy-mm-dd' or an error message
+function readDob() {
+  const m = Number(dobM.value), d = Number(dobD.value);
+  let y = dobY.value;
+  if (!dobM.value || !dobD.value || !y) return { error: 'Please fill in month, day and year.' };
+  if (y.length === 2) { // accept 2-digit years: 85 → 1985, 05 → 2005
+    const yy = Number(y), now = new Date().getFullYear() % 100;
+    y = String(yy > now ? 1900 + yy : 2000 + yy);
+    dobY.value = y;
+  }
+  if (y.length !== 4) return { error: 'Please type the year with 4 digits, for example 1985.' };
+  const yn = Number(y);
+  if (m < 1 || m > 12) return { error: 'The month should be a number from 1 to 12.' };
+  const daysInMonth = new Date(yn, m, 0).getDate();
+  if (d < 1 || d > daysInMonth) return { error: 'That day does not exist in that month. Please check it.' };
+  const thisYear = new Date().getFullYear();
+  if (yn < 1900 || yn > thisYear) return { error: 'Please check the year.' };
+  if (new Date(yn, m - 1, d) > new Date()) return { error: 'That date is in the future. Please check it.' };
+  return { value: y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0') };
+}
+
+// ---------- Moving between steps ----------
+function goStep(n) {
+  if (n > currentStep) {
+    if (currentStep === 1) {
+      if (!$('fname').value.trim()) { $('err-1').textContent = 'Please enter your first name.'; $('fname').focus(); return; }
+      if (!$('lname').value.trim()) { $('err-1').textContent = 'Please enter your last name.'; $('lname').focus(); return; }
+    }
+    if (currentStep === 2) {
+      const r = readDob();
+      if (r.error) { $('err-2').textContent = r.error; return; }
+    }
+    if (currentStep === 3 && !housing) { $('err-3').textContent = 'Please choose one option.'; return; }
+  }
+  ['err-1', 'err-2', 'err-3', 'err-4'].forEach(id => $(id).textContent = '');
+  $('step-' + currentStep).classList.add('hidden');
+  $('d' + currentStep).classList.remove('on');
+  currentStep = n;
+  $('step-' + n).classList.remove('hidden');
+  $('d' + n).classList.add('on');
+  window.scrollTo(0, 0);
+  // Put the cursor in the first box so the keyboard is ready
+  if (n === 1) $('fname').focus();
+  else if (n === 2) (dobM.value ? dobY : dobM).focus();
+  else if (document.activeElement) document.activeElement.blur(); // hide keyboard on button screens
+}
+
+// Enter/Next key on the on-screen keyboard
+$('fname').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('lname').focus(); } });
+$('lname').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); goStep(2); } });
+[dobM, dobD].forEach((el, i) => el.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); [dobD, dobY][i].focus(); }
+}));
+dobY.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); goStep(3); } });
+
+// Keep the box being typed in visible above the on-screen keyboard
+document.querySelectorAll('input').forEach(el => el.addEventListener('focus', () => {
+  setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300);
+}));
+
+// ---------- Saving the check-in ----------
+async function submitForm() {
+  const btn = $('submit-btn');
+  const dob = readDob();
+  if (dob.error) { goStep(2); $('err-2').textContent = dob.error; return; }
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  $('err-4').textContent = '';
+  const payload = {
+    action: 'checkin',
+    firstName: $('fname').value.trim(),
+    lastName: $('lname').value.trim(),
+    dob: dob.value,
+    housing: housing,
+    services: selectedSvcs.join(', ')
+  };
+  try {
+    const result = await callScript(payload);
+    if (result && result.ok) {
+      showSuccess(payload);
+      return;
+    }
+    if (result && result.error === 'unauthorized') {
+      try { sessionStorage.removeItem('kioskPin'); } catch (e) {}
+      kioskPin = '';
+      showPinScreen('The kiosk code needs to be entered again.');
+      return;
+    }
+    $('err-4').textContent = 'Could not save. Please try again or ask a team member.';
+  } catch (e) {
+    $('err-4').textContent = 'Could not save. Check the internet, then try again or ask a team member.';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Check in';
+}
+
+function showSuccess(payload) {
+  $('main-card').classList.add('hidden');
+  $('success-card').classList.remove('hidden');
+  $('success-name').textContent = 'Thanks, ' + payload.firstName + '!';
+  $('success-svcs').textContent = 'Checked in for: ' + payload.services + '. A team member will be with you shortly.';
+  if (document.activeElement) document.activeElement.blur();
+  let left = SUCCESS_RESET_SECONDS;
+  $('countdown').textContent = 'Returning to start in ' + left + ' seconds';
+  clearInterval(successTimer);
+  successTimer = setInterval(() => {
+    left--;
+    if (left <= 0) restart();
+    else $('countdown').textContent = 'Returning to start in ' + left + ' seconds';
+  }, 1000);
+}
+
+// ---------- Reset for the next person ----------
+function restart() {
+  clearInterval(successTimer);
+  ['fname', 'lname', 'dob-m', 'dob-d', 'dob-y'].forEach(id => $(id).value = '');
+  ['err-1', 'err-2', 'err-3', 'err-4'].forEach(id => $(id).textContent = '');
+  housing = '';
+  selectedSvcs = [];
+  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('on'));
+  $('svc-hint').textContent = '';
+  $('submit-btn').disabled = true;
+  $('submit-btn').textContent = 'Check in';
+  $('step-' + currentStep).classList.add('hidden');
+  $('d' + currentStep).classList.remove('on');
+  currentStep = 1;
+  $('d1').classList.add('on');
+  $('step-1').classList.remove('hidden');
+  $('success-card').classList.add('hidden');
+  $('main-card').classList.remove('hidden');
+  if (document.activeElement) document.activeElement.blur();
+  window.scrollTo(0, 0);
+}
+
+// Clears a half-finished check-in if the screen is left alone,
+// so the next person never sees someone else's name or birthday.
+function hasPartialEntry() {
+  return ['fname', 'lname', 'dob-m', 'dob-d', 'dob-y'].some(id => $(id).value) ||
+    housing || selectedSvcs.length || currentStep !== 1;
+}
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (!$('main-card').classList.contains('hidden') && hasPartialEntry()) restart();
+  }, IDLE_RESET_SECONDS * 1000);
+}
+['pointerdown', 'keydown', 'input'].forEach(ev => document.addEventListener(ev, resetIdleTimer, true));
+resetIdleTimer();
 
 // If the code was already entered earlier this session, skip the PIN screen
 (async function tryRememberedPin() {
@@ -243,91 +549,6 @@ function renderServices(list) {
     showPinScreen('Could not connect. Check the internet and try again.');
   }
 })();
-
-// ---------- Moving between steps ----------
-function goStep(n) {
-  if (n === 2 && !document.getElementById('fname').value.trim()) { document.getElementById('fname').focus(); return; }
-  if (n === 2 && !document.getElementById('lname').value.trim()) { document.getElementById('lname').focus(); return; }
-  if (n === 3 && !document.getElementById('dob').value) { document.getElementById('dob').focus(); return; }
-  if (n === 4 && !document.getElementById('housing').value) { document.getElementById('housing').focus(); return; }
-  document.getElementById('step-' + currentStep).classList.add('hidden');
-  document.getElementById('d' + currentStep).classList.remove('on');
-  currentStep = n;
-  document.getElementById('step-' + n).classList.remove('hidden');
-  document.getElementById('d' + n).classList.add('on');
-}
-
-function toggleSvc(btn, svc) {
-  if (btn.classList.contains('on')) {
-    btn.classList.remove('on');
-    selectedSvcs = selectedSvcs.filter(s => s !== svc);
-  } else {
-    btn.classList.add('on');
-    selectedSvcs.push(svc);
-  }
-  document.getElementById('svc-hint').textContent = selectedSvcs.length ? 'Selected: ' + selectedSvcs.join(', ') : '';
-  document.getElementById('submit-btn').disabled = selectedSvcs.length === 0;
-}
-
-// ---------- Saving the check-in ----------
-async function submitForm() {
-  const btn = document.getElementById('submit-btn');
-  const err = document.getElementById('submit-err');
-  btn.disabled = true;
-  btn.textContent = 'Saving...';
-  err.textContent = '';
-  const payload = {
-    action: 'checkin',
-    firstName: document.getElementById('fname').value.trim(),
-    lastName: document.getElementById('lname').value.trim(),
-    dob: document.getElementById('dob').value,
-    housing: document.getElementById('housing').value,
-    services: selectedSvcs.join(', ')
-  };
-  try {
-    const result = await callScript(payload);
-    if (result && result.ok) {
-      document.getElementById('main-card').classList.add('hidden');
-      document.getElementById('success-card').classList.remove('hidden');
-      document.getElementById('success-name').textContent = 'Thanks, ' + payload.firstName + '!';
-      document.getElementById('success-svcs').textContent = 'Checked in for: ' + payload.services + '. A team member will be with you shortly.';
-    } else if (result && result.error === 'unauthorized') {
-      try { sessionStorage.removeItem('kioskPin'); } catch (e) {}
-      kioskPin = '';
-      showPinScreen('The kiosk code needs to be entered again.');
-    } else {
-      err.textContent = 'Could not save. Please try again or ask a team member.';
-      btn.disabled = false;
-      btn.textContent = 'Check in';
-    }
-  } catch (e) {
-    err.textContent = 'Could not save. Please try again or ask a team member.';
-    btn.disabled = false;
-    btn.textContent = 'Check in';
-  }
-}
-
-// ---------- Reset for the next person ----------
-function restart() {
-  document.getElementById('fname').value = '';
-  document.getElementById('lname').value = '';
-  document.getElementById('dob').value = '';
-  document.getElementById('housing').value = '';
-  document.getElementById('step1-err').textContent = '';
-  document.getElementById('submit-err').textContent = '';
-  selectedSvcs = [];
-  document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('on'));
-  document.getElementById('svc-hint').textContent = '';
-  document.getElementById('submit-btn').disabled = true;
-  document.getElementById('submit-btn').textContent = 'Check in';
-  document.getElementById('step-' + currentStep).classList.add('hidden');
-  document.getElementById('d' + currentStep).classList.remove('on');
-  currentStep = 1;
-  document.getElementById('d1').classList.add('on');
-  document.getElementById('step-1').classList.remove('hidden');
-  document.getElementById('success-card').classList.add('hidden');
-  document.getElementById('main-card').classList.remove('hidden');
-}
 </script>
 </body>
 </html>
